@@ -1,5 +1,6 @@
 #include <libwebsockets.h>
 #include <string.h>
+#include <bsd/string.h>
 
 static int bad = 1, status;
 static struct lws *client_wsi;
@@ -9,11 +10,13 @@ static char _access_token[1024];
 static char _product_name[1024];
 static char _organization_id[1024];
 
+static int data_sent = 0;
+
 static int
 the_callback(struct lws *wsi, enum lws_callback_reasons reason,
 	      void *user, void *in, size_t len)
 {
-    printf("callback_http\n");
+    printf("callback_http with reason=%i\n", reason);
 
 	switch (reason) {
 
@@ -26,21 +29,74 @@ the_callback(struct lws *wsi, enum lws_callback_reasons reason,
 
     case LWS_CALLBACK_CLIENT_RECEIVE:
         lwsl_hexdump_notice(in, len);
+        if(strnstr(in, "decoding", len)) {
+           printf("decoding\n");
+        } else {
+           printf("something else\n");
+           break;
+        }
+
+        if(data_sent) break;
+
+        unsigned char buffer[50000];
+        FILE *ptr;
+
+        ptr = fopen("ohayou_gozaimasu.r-8000.e-unsigned.b-16.c-1.raw","rb");  // r for read, b for binary
+
+        int data_len = fread(buffer,1, sizeof(buffer),ptr);
+        printf("data_len=%i\n", data_len);
+
+        while(data_len > 0) {
+            int flags = LWS_WRITE_TEXT;
+            char msg[165536+LWS_PRE];
+            char *p = msg+LWS_PRE;
+            
+            p += sprintf(p, "{\"type\": \"streamAudio\", \"stream\": [");
+
+            for(int i=0 ; i<data_len ; i++) {
+               int val = buffer[i*2];
+               if(i == 0) {
+                 p += sprintf(p, "%u", val);
+               } else {
+                 p += sprintf(p, ",%u", val);
+               }
+            }
+            
+            p += sprintf(p, "]}");
+
+            printf("%s\n", msg+LWS_PRE);
+
+            int msg_len = p-msg;
+            msg_len = strlen(msg+LWS_PRE);
+            printf("msg_len=%i\n", msg_len);
+            
+
+            int m = lws_write(wsi, (unsigned char*)(msg + LWS_PRE), msg_len, (enum lws_write_protocol)flags);
+            if (m < msg_len) {
+                lwsl_err("ERROR %d writing to ws socket\n", m);
+                exit(-1);
+            }
+
+            data_len = fread(buffer,sizeof(buffer),1,ptr);
+            printf("data_len=%i\n", data_len);
+        }
+        data_sent = 1;
+
         break;
 
     case LWS_CALLBACK_CLIENT_ESTABLISHED:
         printf("established\n");
 
-        int flags = 0 ? LWS_WRITE_BINARY : LWS_WRITE_TEXT;
+        int flags = LWS_WRITE_TEXT;
 
         /* notice we allowed for LWS_PRE in the payload already */
 
         char msg[LWS_PRE + 4096];
-        int len = sprintf((char*)(msg+LWS_PRE), "{\"access_token\": \"%s\", \"type\": \"start\", \"sampling_rate\": 8000, \"product_name\": \"%s\", \"organization_id\": \"%s\", \"model_alias\": \"model_batoner_japanese\"}", _access_token, _product_name, _organization_id);
+        int msg_len = sprintf((char*)(msg+LWS_PRE), "{\"access_token\": \"%s\", \"type\": \"start\", \"sampling_rate\": 8000, \"product_name\": \"%s\", \"organization_id\": \"%s\", \"model_alias\": \"model_batoner_japanese\"}", _access_token, _product_name, _organization_id);
         //printf("msg=%s len=%i\n", (char*)(msg+LWS_PRE), len);
 
-        int m = lws_write(wsi, (unsigned char*)(msg + LWS_PRE), len, (enum lws_write_protocol)flags);
-        if (m < len) {
+        int m = lws_write(wsi, (unsigned char*)(msg + LWS_PRE), msg_len, (enum lws_write_protocol)flags);
+        if (m < msg_len) {
             lwsl_err("ERROR %d writing to ws socket\n", m);
             exit(-1);
         }
