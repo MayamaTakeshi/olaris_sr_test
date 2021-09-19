@@ -41,24 +41,24 @@ the_callback(struct lws *wsi, enum lws_callback_reasons reason,
         unsigned char buffer[50000];
         FILE *ptr;
 
-        ptr = fopen("ohayou_gozaimasu.r-8000.e-unsigned.b-16.c-1.raw","rb");  // r for read, b for binary
+        ptr = fopen("ohayou_gozaimasu.r-8000.e-signed.b-16.c-1.raw","rb");  // r for read, b for binary
 
         int data_len = fread(buffer,1, sizeof(buffer),ptr);
         printf("data_len=%i\n", data_len);
 
         while(data_len > 0) {
             int flags = LWS_WRITE_TEXT;
-            char msg[165536+LWS_PRE];
+            char msg[965536+LWS_PRE];
             char *p = msg+LWS_PRE;
             
             p += sprintf(p, "{\"type\": \"streamAudio\", \"stream\": [");
 
-            for(int i=0 ; i<data_len ; i++) {
-               int val = buffer[i*2];
+            for(int i=0 ; i<data_len/2 ; i++) {
+               short int val = (buffer[i*2+1] << 8) + buffer[i*2];
                if(i == 0) {
-                 p += sprintf(p, "%u", val);
+                 p += sprintf(p, "%hi", val);
                } else {
-                 p += sprintf(p, ",%u", val);
+                 p += sprintf(p, ",%hi", val);
                }
             }
             

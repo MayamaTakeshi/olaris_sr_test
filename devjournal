@@ -19,20 +19,21 @@ File Size      : 197k
 Bit Rate       : 768k
 Sample Encoding: 16-bit Signed Integer PCM
 
-$ sox ohayou_gozaimasu.wav -r 8000 -t raw -e unsigned --endian little ohayou_gozaimasu.r-8000.e-unsigned.b-16.c-1.raw
+
+$ sox ohayou_gozaimasu.wav -r 8000 -t raw -e signed --endian little ohayou_gozaimasu.r-8000.e-signed.b-16.c-1.raw
 
 ```
 
 Confirmed it worked this way:
 ```
-$ play -b 16 -r 8000 -t raw -e unsigned --endian little ohayou_gozaimasu.r-8000.e-unsigned.b-16.c-1.raw
-play WARN alsa: can't encode 0-bit Unknown or not applicable
-play WARN alsa: can't encode 16-bit Unsigned Integer PCM
 
-ohayou_gozaimasu.r-8000.e-unsigned.b-16.c-1.raw:
+$ play -b16 -r 8000 -t raw -e signed --endian little ohayou_gozaimasu.r-8000.e-signed.b-16.c-1.raw
+play WARN alsa: can't encode 0-bit Unknown or not applicable
+
+ohayou_gozaimasu.r-8000.e-signed.b-16.c-1.raw:
 
  File Size: 32.8k     Bit Rate: 128k
-  Encoding: Unsigned PCM  
+  Encoding: Signed PCM    
   Channels: 1 @ 16-bit   
 Samplerate: 8000Hz       
 Replaygain: off         
@@ -40,6 +41,7 @@ Replaygain: off
 
 In:100%  00:00:02.05 [00:00:00.00] Out:16.4k [   ===|===   ]        Clip:0    
 Done.
+
 ```
 ---------------------------------------------------------------------
 2021/09/19 takeshi:
@@ -47,7 +49,7 @@ Done.
 We prepared the code to read audio from file and send it to olaris but it is not working.
 Probably we are generating the JSON data wrongly.
 
-Here is sample from test with mrcp_server for comparison:
+Here is sample from test with mrcp_server (where olaris works) for comparison:
 
 {"type":"streamAudio","stream":[-8,0,0,0,0,8,0,0,0,-8,0,-8,0,0,-8,8,0,-8,0,0,8,0,8,0,0,0,8,0,0,8,0,8,0,0,-8,0,0,0,0,0,0,0,0,0,0,8,0,0,0,0,-8,-8,0,0,8,0,0,0,0,-8,-8,0,0,0,8,0,0,8,8,0,0,8,0,-8,0,0,0,-8,0,-
 8,0,0,0,0,0,0,0,0,0,8,0,0,0,0,0,0,8,8,8,8,8,8,8,8,8,0,8,0,8,0,0,0,0,0,0,0,8,8,0,0,0,0,0,0,0,8,8,8,8,8,8,0,0,0,8,8,0,-8,0,-8,8,-8,-8,0,0,0,-8,0,0,0,-8,-8,0,0,0,8,8,0,0,8]}                                 
