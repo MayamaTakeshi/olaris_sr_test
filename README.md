@@ -30,13 +30,13 @@ make
 {
    "api_key": "YOUR_API_KEY",
    "product_name": "YOUR_PRODUCT_NAME",
-   "organization_id": "YOUR_ORGANIZATION_ID",
+   "organization_id": "YOUR_ORGANIZATION_ID"
 }
 ```
 
 ## Test
 ```
-./olaris_test PATH_TO_SON_CONFIG_FILE
+./olaris_test PATH_TO_JSON_CONFIG_FILE
 ```
 
 ## Sample test output
