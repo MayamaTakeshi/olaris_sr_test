@@ -25,7 +25,10 @@ sudo make install
 make
 ```
 
-## Prepare json config file with olaris API credentials. It should be like this:
+## Prepare json config file 
+
+It should contain olaris API credentials:
+
 ```
 {
    "api_key": "YOUR_API_KEY",
@@ -34,10 +37,11 @@ make
 }
 ```
 
-## Prepare audio file (must be raw with samplingRate=8000, 16bit, signed, 1-channel, little-endian).
+## Prepare audio file
+It must be raw with samplingRate=8000, 16bit, signed, 1-channel, little-endian.
 Ex:
 ```
-sox research/online-decoder-client/konnichiwa-pad.wav -r 8000 -b 16 -c 1 -e signed --endian little konnichiwa-pad.r-8000.b-16.c-1.e-signed.endian-little.raw
+sox research/online-decoder-client/konnichiwa.wav -r 8000 -b 16 -c 1 -e signed --endian little konnichiwa.r-8000.b-16.c-1.e-signed.endian-little.raw
 
 sox research/online-decoder-client/konnichiwa-pad.wav -r 8000 -b 16 -c 1 -e signed --endianness little konnichiwav-pad.r-8000.b-16.c-1.e-signed.endianness-little.raw
 ```
@@ -74,5 +78,6 @@ we get:
   \u3053\u3093\u306b\u3061\u306f => こんにちは
 ```
 
+So it is OK.
 
 
