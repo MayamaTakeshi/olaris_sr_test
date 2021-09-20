@@ -142,3 +142,55 @@ data_len=1024
 msg_len=1060
 [2021/09/20 12:48:44:2251] E: ERROR 0 writing to ws socket
 
+---------------------------------------------------------------------
+2021/09/20 takeshi:
+
+Outputting unicode:
+
+1) char by char:
+takeshi:tmp$ cat a.c 
+#include <stdio.h>
+#include <wchar.h>
+#include <locale.h>
+
+int main() {
+    setlocale(LC_CTYPE, "");
+    // こんにちは
+    wchar_t word[] = {0x3053, 0x3093, 0x306b, 0x3061, 0x306f};
+    for(int i=0 ; i < 5 ; i++) {
+      wprintf(L"%lc", word[i]);
+    }
+    wprintf(L"\n");
+}
+
+takeshi:tmp$ gcc a.c
+
+takeshi:tmp$ ./a.out 
+こんにちは
+
+
+2) array:
+takeshi:olaris_sr_test$ cat b.c 
+#include <stdio.h>
+#include <stdlib.h>
+#include <locale.h>
+#include <wchar.h>
+
+int main(void)
+{
+    wchar_t *s;
+    wchar_t word[] = {0x3053, 0x3093, 0x306b, 0x3061, 0x306f, 0x00};
+ 
+    setlocale(LC_ALL, "");
+
+    if (printf("%ls\n", word) < 0) {
+        perror("printf");
+    }
+} 
+
+takeshi:olaris_sr_test$ gcc b.c 
+
+takeshi:olaris_sr_test$ ./a.out 
+こんにちは
+
+
