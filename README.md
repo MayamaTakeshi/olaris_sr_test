@@ -70,13 +70,15 @@ callback_http with reason=8
 decoding
 ^C
 takeshi:olaris_sr_test$ 
+```
 
 If we pass the result to a decoder like this:
+
   https://www.online-toolz.com/tools/text-unicode-entities-convertor.php
 
 we get:
+
   \u3053\u3093\u306b\u3061\u306f => こんにちは
-```
 
 So it is OK.
 
