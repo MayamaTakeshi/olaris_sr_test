@@ -1,0 +1,63 @@
+---------------------------------------------------------
+2021/09/20 takeshi:
+
+Investigating olaris failure to process the data from our c test app.
+This sample was provided by ErnieMLG for testing.
+
+Checking the sample app:
+
+$ echo -n -e \\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07 > a.raw
+$ hex a.raw
+$ sox -r 8000 -b 16 --endian little -c 1 -e signed a.raw a.wav
+
+$ file a.wav 
+a.wav: RIFF (little-endian) data, WAVE audio, Microsoft PCM, 16 bit, mono 8000 Hz
+
+$ soxi a.wav 
+
+Input File     : 'a.wav'
+Channels       : 1
+Sample Rate    : 8000
+Precision      : 16-bit
+Duration       : 00:00:00.00 = 4 samples ~ 0.0375 CDDA sectors
+File Size      : 52
+Bit Rate       : 832k
+Sample Encoding: 16-bit Signed Integer PCM
+
+$ file a.wav 
+a.wav: RIFF (little-endian) data, WAVE audio, Microsoft PCM, 16 bit, mono 8000 Hz
+
+$ hex a.wav 
+524946462c00000057415645666d74201000000001000100401f0000803e00000200100064617461080000000001020304050607
+
+$ python3 wav_streaming_sample.py a.wav res.txt
+
+{"type": "streamAudio", "stream": [255, 767, 1280, 1793]}
+
+
+$ python -c 'print(map(lambda x: hex(x), [255, 767, 1280, 1793]))'
+['0xff', '0x2ff', '0x500', '0x701']
+
+# printing considering little endian:
+$ python -c 'print(0x0100, 0x0302, 0x0504, 0x0706)'
+(256, 770, 1284, 1798)
+
+
+---------------------------------------------------------
+2021/09/20 takeshi:
+
+We added a script node/wav_streaming_sample.js to check streaming wav file using nodejs.
+We verified we cannot send large amounts of data at once as olaris will fail to process it:
+
+OK:
+takeshi:nodejs$ node wav_streaming_sample.js ../konnichiwa-pad.wav 1024
+ws open
+Format: {"audioFormat":1,"endianness":"LE","channels":1,"sampleRate":8000,"byteRate":16000,"blockAlign":2,"bitDepth":16,"signed":true}
+こんにちは
+
+NG:
+takeshi:nodejs$ node wav_streaming_sample.js ../konnichiwa-pad.wav 50000
+ws open
+Format: {"audioFormat":1,"endianness":"LE","channels":1,"sampleRate":8000,"byteRate":16000,"blockAlign":2,"bitDepth":16,"signed":true}
+
+

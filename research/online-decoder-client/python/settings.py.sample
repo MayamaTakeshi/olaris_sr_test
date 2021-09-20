@@ -1,0 +1,13 @@
+API_BASE = 'realtime.stt.batoner.works/real-time-decode'
+MODEL_NAME = None
+MODEL_ALIAS = 'model_batoner_japanese'
+MODEL_SAMPLING_RATE=8000
+PRODUCT_NAME = 'YOUR_PRODUCT_NAME'
+ORGANIZATION_ID = 'YOUR_ORGANIZATION_ID'
+USER_ID = None
+API_KEY = 'YOUR_API_KEY'
+WORDS = [
+    'Ernie,アーニー',
+    'Olaris,オラリス',
+    'Batoner,バトナー',
+]

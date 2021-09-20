@@ -1,0 +1,6 @@
+nodejs/const.js
+nodejs/node_modules
+
+*.pyc
+python/settings.py
+python/__pycache__

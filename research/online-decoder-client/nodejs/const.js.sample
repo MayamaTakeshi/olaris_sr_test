@@ -1,0 +1,16 @@
+module.exports = {
+  API_BASE: 'realtime.stt.batoner.works/real-time-decode',
+  MODEL_NAME: null,
+  MODEL_ALIAS: 'model_batoner_japanese',
+  SAMPLE_RATE_HERTZ: 8000,
+  PRODUCT_NAME: 'YOUR_PRODUCT_NAME',
+  ORGANIZATION_ID: 'YOUR_ORGANIZATION_ID',
+  USER_ID: null,
+  API_KEY: 'YOUR_API_KEY',
+  OUTPUT_FILE: 'result.txt',
+  WORDS: [
+    'Ernie,アーニー',
+    'Olaris,オラリス',
+    'Batoner,バトナー',
+  ]
+}
