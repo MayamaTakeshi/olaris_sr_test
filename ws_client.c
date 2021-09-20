@@ -9,6 +9,7 @@ static struct lws_context *context;
 static char _access_token[1024];
 static char _product_name[1024];
 static char _organization_id[1024];
+static char _audio_file[1024];
 
 static int data_sent = 0;
 
@@ -28,7 +29,8 @@ the_callback(struct lws *wsi, enum lws_callback_reasons reason,
 		break;
 
     case LWS_CALLBACK_CLIENT_RECEIVE:
-        lwsl_hexdump_notice(in, len);
+        //lwsl_hexdump_notice(in, len);
+        printf("%.*s\n", (int)len, (char*)in);
         if(strnstr(in, "decoding", len)) {
            printf("decoding\n");
         } else {
@@ -38,10 +40,10 @@ the_callback(struct lws *wsi, enum lws_callback_reasons reason,
 
         if(data_sent) break;
 
-        unsigned char buffer[50000];
+        unsigned char buffer[1024];
         FILE *ptr;
 
-        ptr = fopen("ohayou_gozaimasu.r-8000.e-signed.b-16.c-1.raw","rb");  // r for read, b for binary
+        ptr = fopen(_audio_file,"rb");  // r for read, b for binary
 
         int data_len = fread(buffer,1, sizeof(buffer),ptr);
         printf("data_len=%i\n", data_len);
@@ -77,7 +79,7 @@ the_callback(struct lws *wsi, enum lws_callback_reasons reason,
                 exit(-1);
             }
 
-            data_len = fread(buffer,sizeof(buffer),1,ptr);
+            data_len = fread(buffer,1, sizeof(buffer),ptr);
             printf("data_len=%i\n", data_len);
         }
         data_sent = 1;
@@ -121,10 +123,11 @@ static const struct lws_protocols protocols[] = {
 };
 
 
-void ws_client_start(char *access_token, char *product_name, char *organization_id) {
+void ws_client_start(char *access_token, char *product_name, char *organization_id, char *audio_file) {
     strcpy(_access_token, access_token);
     strcpy(_product_name, product_name);
     strcpy(_organization_id, organization_id);
+    strcpy(_audio_file, audio_file);
 
 	struct lws_context_creation_info info;
     struct lws_client_connect_info i;

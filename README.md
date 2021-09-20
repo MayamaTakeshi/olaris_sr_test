@@ -1,5 +1,5 @@
 # olaris_sr_test
-A simple test app written in c showing how to connect to Olaris speech Recognition engine.
+A simple test app written in c showing how to connect to Olaris Speech Recognition Engine.
 
 ## Preparation
 
@@ -10,14 +10,14 @@ sudo apt install libcurl3-gnutls
 sudo apt install libjson-c-dev
 ```
 
-Install libwebsockets (do not get using apt as it will be too old):
+Install libwebsockets (do not get it using apt as it will be too old):
 ```
-   git clone https://github.com/warmcat/libwebsockets
-   cd libwebsockets
-   git checkout 7126d848575e4c9d80a1e4893018f55126b42fd1
-   cmake .
-   make
-   sudo make install
+git clone https://github.com/warmcat/libwebsockets
+cd libwebsockets
+git checkout 7126d848575e4c9d80a1e4893018f55126b42fd1
+cmake .
+make
+sudo make install
 ```
 
 ## Build
@@ -34,47 +34,45 @@ make
 }
 ```
 
+## Prepare audio file (must be raw with samplingRate=8000, 16bit, signed, 1-channel, little-endian).
+Ex:
+```
+sox research/online-decoder-client/konnichiwa-pad.wav -r 8000 -b 16 -c 1 -e signed --endian little konnichiwa-pad.r-8000.b-16.c-1.e-signed.endian-little.raw
+
+sox research/online-decoder-client/konnichiwa-pad.wav -r 8000 -b 16 -c 1 -e signed --endianness little konnichiwav-pad.r-8000.b-16.c-1.e-signed.endianness-little.raw
+```
+  
+
 ## Test
 ```
-./olaris_test PATH_TO_JSON_CONFIG_FILE
+./olaris_test PATH_TO_JSON_CONFIG_FILE PATH_TO_AUDIO_FILE
 ```
 
 ## Sample test output
 ```
-takeshi:olaris_sr_test$ ./olaris_test ~/tmp/olaris.json 
-Response Code: 200
-Size: 181
-[2021/09/19 14:31:40:3801] N: LWS: 4.2.99-v4.2.0-200-g7126d848, NET CLI SRV H1 H2 WS ConMon IPv6-absent
-[2021/09/19 14:31:40:3803] N:  ++ [wsi|0|pipe] (1)
-[2021/09/19 14:31:40:3803] N:  ++ [vh|0|netlink] (1)
-[2021/09/19 14:31:40:3804] N:  ++ [vh|1|default||-1] (2)
-callback_http
-callback_http
-callback_http
-[2021/09/19 14:31:40:3808] N:  ++ [wsicli|0|WS/h1/realtime.stt.batoner.works] (1)
-callback_http
-callback_http
-callback_http
-callback_http
-callback_http
-callback_http
-callback_http
-callback_http
-callback_http
-callback_http
-callback_http
-callback_http
-callback_http
-callback_http
-established
-callback_http
-[2021/09/19 14:31:41:8336] N: 
-[2021/09/19 14:31:41:8336] N: 0000: 7B 22 74 79 70 65 22 3A 20 22 64 65 63 6F 64 69    {"type": "decodi
-[2021/09/19 14:31:41:8336] N: 0010: 6E 67 22 2C 20 22 72 65 73 75 6C 74 22 3A 20 22    ng", "result": "
-[2021/09/19 14:31:41:8336] N: 0020: 22 7D                                              "}              
-[2021/09/19 14:31:41:8336] N: 
+takeshi:olaris_sr_test$ ./olaris_test ~/tmp/olaris.json konnichiwa.r-8000.b-16.c-1.e-signed.endian-little.raw 
+... ABRIDGED ...
+callback_http with reason=8
+{"type": "decoding", "result": "", "raw": ""}
+decoding
+callback_http with reason=8
+{"type": "decoding", "result": "\u3053\u3093\u306b\u3061\u306f", "raw": "\u3053\u3093\u306b\u3061\u306f+\u611f\u52d5\u8a5e "}
+decoding
+callback_http with reason=8
+{"type": "decoding", "result": "\u3053\u3093\u306b\u3061\u306f", "raw": "\u3053\u3093\u306b\u3061\u306f+\u611f\u52d5\u8a5e "}
+decoding
+callback_http with reason=8
+{"type": "decoding", "result": "\u3053\u3093\u306b\u3061\u306f", "raw": "\u3053\u3093\u306b\u3061\u306f+\u611f\u52d5\u8a5e "}
+decoding
+^C
+takeshi:olaris_sr_test$ 
+
+If we pass the result to a decoder like this:
+  https://www.online-toolz.com/tools/text-unicode-entities-convertor.php
+
+we get:
+  \u3053\u3093\u306b\u3061\u306f => こんにちは
 ```
 
-After the above response ("decoding") the engine is waiting for audio to be sent in the WebSocket connection.
 
 
